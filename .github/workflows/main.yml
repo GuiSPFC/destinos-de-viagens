@@ -1,0 +1,40 @@
+#TESTE
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  ci-cd:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 18
+        cache: 'npm'
+
+    - name: Instalar dependências
+      run: npm ci
+
+    - name: Rodar lint
+      run: npm run lint
+
+    - name: Rodar testes
+      run: npm run test
+
+    - name: Rodar build
+      run: npm run build
+
+    - name: Instalar Vercel CLI
+      run: npm install -g vercel
+
+    - name: Realizar Deploy para a Vercel
+      run: vercel --prod --yes --token=${{ secrets.VERCEL_TOKEN }} --scope=${{ secrets.VERCEL_ORG_ID }} --project=${{ secrets.VERCEL_PROJECT_ID }}
